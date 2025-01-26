@@ -1,6 +1,4 @@
-  //still missing : tie the game if moves goes to 9.
-  //check diagonals for wins
-  //dom integration
+
   
   class TicTacToe{
     constructor(){
@@ -11,93 +9,64 @@
       this.moves = 0; 
     }
 
-    makeBoard(){
-        var board = [];
-
-        for(let i = 0; i<3;i++){
-            board[i]= [1,1,1];
-        }
-        return board;
+    makeBoard() {
+      return Array(3).fill().map(() => Array(3).fill(null));
     }
 
-      makeMove(row, col) {
-    
-      if(this.board[row][col] !== 1 ){
-        console.log("This space is occupied!");
-        return false;
-      }
+    makeMove(row, col) {
       
-        this.board[row][col] = this.currentPlayer.getSymbol();
-        this.moves++;
-        console.log(this.board);//for debugging 
-
+      if (this.board[row][col] !== null) return false;
+    
+      this.board[row][col] = this.currentPlayer.getSymbol();
+      this.moves++;
+    
       const winner = this.checkWinner();
-      if(winner){
-        alert(`${winner} wins!`);
+      if (winner) {
+        alert(winner === "TIE" ? "It's a tie!" : `${winner} wins!`);
         return true;
       }
-
-      //swap players
-      this.currentPlayer = this.currentPlayer===this.playerX ? this.playerO : this.playerX;
-
-
+    
+      this.currentPlayer = this.currentPlayer === this.playerX ? this.playerO : this.playerX;
+      return true;
     }
 
-    checkWinner(){
-
-    for(let r=0;r<3;r++){
-      let xCount = 0;
-      let oCount = 0;
-
-      for(let c=0;c<3;c++){
-        if(this.board[r][c]=="X"){
-          xCount++;
-        }
-        if(this.board[r][c]=="O"){
-          oCount++;
-        }
-        if(xCount >=3 ){
-          console.log("X WINS")
-          return "X";
-        }
-        if(oCount >=3 ){
-
-          console.log("O WINS");
-          return "O";
+    checkWinner() {
+      // Check rows
+      for (let row = 0; row < 3; row++) {
+        if (this.board[row][0] === this.board[row][1] && 
+            this.board[row][1] === this.board[row][2] && 
+            this.board[row][0] !== null) {
+          return this.board[row][0];
         }
       }
-    }
-
-    for(let c=0;c<3;c++){
-      let xCount = 0;
-      let oCount = 0;
-
-      for(let r=0;r<3;r++){
-        if(this.board[r][c]=="X"){
-          xCount++;
+    
+      // Check columns
+      for (let col = 0; col < 3; col++) {
+        if (this.board[0][col] === this.board[1][col] && 
+            this.board[1][col] === this.board[2][col] && 
+            this.board[0][col] !== null) {
+          return this.board[0][col];
         }
-        if(this.board[r][c]=="O"){
-          oCount++;
-        }
-        if(xCount >=3 ){
-          console.log("X WINS");
-          return "X";
-          
-        }
-        if(oCount >=3 ){
-          console.log("O WINS")
-          return "O";
-          
-        }
-
-        return null;
       }
+    
+      // Check diagonals
+      if (this.board[0][0] === this.board[1][1] && 
+          this.board[1][1] === this.board[2][2] && 
+          this.board[0][0] !== null) {
+        return this.board[0][0];
+      }
+    
+      if (this.board[0][2] === this.board[1][1] && 
+          this.board[1][1] === this.board[2][0] && 
+          this.board[0][2] !== null) {
+        return this.board[0][2];
+      }
+    
+      // Check tie
+      if (this.moves === 9) return "TIE";
+    
+      return null;
     }
-
-
-    
-    
-  }
 
   }
 
@@ -115,19 +84,36 @@
 
   }
 
+  
+  
+
 
   const game = new TicTacToe();
   
 
+  const buttons = document.querySelectorAll(".buttons");
+
+buttons.forEach(button => {
+  button.addEventListener("click", (e) => { 
+    const row1 = parseInt(e.target.dataset.row);
+    const col1 = parseInt(e.target.dataset.col);
+    console.log(row1);
+    console.log(col1);
+    
+   
+    const currentSymbol = game.currentPlayer.getSymbol();
+    
+    const moveSuccessful = game.makeMove(row1, col1);
+    
+    if (moveSuccessful) {
+      e.target.textContent = currentSymbol; 
+    }
+  });
+});
+ 
 
 
 
-
-  //function to make rotating moves between the players (shouldnt this be in start game or seperated )
-
-
-
-  //and also check if one player is winning. how do i check if a player is winning.
 
 
 
